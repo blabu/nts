@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"time"
 
@@ -10,11 +9,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func WaitDataCommand(handler func(conn *nats.Conn, topic string, w io.Writer) error) *cobra.Command {
+func WaitData(handler CommandHandler) *cobra.Command {
+	if handler == nil {
+		panic("internal error: handler can not be nil")
+	}
 	var listen = &cobra.Command{
 		Use:   "listen",
-		Short: "listen data across nats system over steaming",
-		Long:  "listen some topic from nats system",
+		Short: "Listen data across nats system",
+		Long: "Listen some topic from nats system received data will be write into write flag.\n" +
+			"Core NATS offers an at most once quality of service.\n" +
+			"If a subscriber is not listening on the subject (no subject match), \n" +
+			"or is not active when the message is sent, the message is not received.",
 	}
 	topic := listen.Flags().StringP(topicFlag, string(topicFlag[0]), "", "topik name")
 	host := listen.Flags().String(hostFlag, "127.0.0.1:4222", "127.0.0.1:4222")

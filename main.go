@@ -1,10 +1,11 @@
 package main
 
-import "github.com/blabu/nats_test/cmd"
+import "github.com/blabu/nts/cmd"
 
 func main() {
 	root := cmd.CreateRootCmd()
-	root.AddCommand(cmd.SendDataCommand(sendFileHandler))
-	root.AddCommand(cmd.WaitDataCommand(listenTopicHandler))
+	root.AddCommand(cmd.SendData(sendFileHandler))
+	root.AddCommand(cmd.WaitData(listenTopicHandler))
+	root.AddCommand(cmd.StreamData(streamHandler))
 	root.Execute()
 }
