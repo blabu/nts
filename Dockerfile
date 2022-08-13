@@ -21,3 +21,6 @@ RUN export GIT_COMMIT="$(git rev-parse HEAD)" && \
     -X ${APP_PKG}/cmd.subversion=${GIT_COMMIT} \
     " .
 
+FROM alpine:3.16
+COPY --from=builder /nts/nts /bin/
+
