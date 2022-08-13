@@ -1,4 +1,4 @@
-module github.com/blabu/nats_test
+module github.com/blabu/nts
 
 go 1.18
 
