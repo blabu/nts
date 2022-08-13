@@ -9,7 +9,7 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
-func sendFileHandler(conn *nats.Conn, topic string, r io.Reader) error {
+func sendFileHandler(conn *nats.Conn, topic string, r io.ReadWriter) error {
 	getDataSlice := func(buff []byte, maxPayload int64) int64 {
 		if int64(len(buff)) > maxPayload {
 			return maxPayload
@@ -52,7 +52,7 @@ func sendFileHandler(conn *nats.Conn, topic string, r io.Reader) error {
 	}
 }
 
-func listenTopicHandler(conn *nats.Conn, topic string, w io.Writer) error {
+func listenTopicHandler(conn *nats.Conn, topic string, w io.ReadWriter) error {
 	msgs := make(chan *nats.Msg, 2)
 	sb, err := conn.ChanSubscribe(topic, msgs)
 	if err != nil {
@@ -66,6 +66,14 @@ func listenTopicHandler(conn *nats.Conn, topic string, w io.Writer) error {
 		if _, err := w.Write(data.Data); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func streamHandler(conn *nats.Conn, topic string, rw io.ReadWriter) error {
+	_, err := conn.JetStream()
+	if err != nil {
+		return err
 	}
 	return nil
 }

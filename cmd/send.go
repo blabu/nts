@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"time"
 
@@ -10,11 +9,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func SendDataCommand(handler func(con *nats.Conn, topic string, r io.Reader) error) *cobra.Command {
+func SendData(handler CommandHandler) *cobra.Command {
+	if handler == nil {
+		panic("internal error: handler can not be nil")
+	}
 	var send = &cobra.Command{
 		Use:   "send",
 		Short: "Send file across nats system over steaming",
-		Long:  "Send some file to the topic",
+		Long: "Send some file to the topic. \n" +
+			"If file is being larger than 1 Mb (default max payload size) it will be sliced.\n" +
+			"Core NATS offers an at most once quality of service. \n" +
+			"If a subscriber is not listening on the subject (no subject match), \n" +
+			"or is not active when the message is sent, the message is not received.\n",
 	}
 	topic := send.Flags().StringP(topicFlag, string(topicFlag[0]), "", "topik name")
 	host := send.Flags().String(hostFlag, "127.0.0.1:4222", "127.0.0.1:4222")
